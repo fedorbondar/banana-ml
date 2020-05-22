@@ -47,26 +47,27 @@ class resBlock(nn.Module):
 
 class Predictor:
     def __init__(self, path='dogs_cats_dict'):
-        self.model = nn.Sequential(Block(in_channels=3, out_channels=20, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=3, stride=2),
-                                   Block(in_channels=20, out_channels=40, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=2, stride=2),
-                                   Block(in_channels=40, out_channels=80, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=3, stride=2),
-                                   Block(in_channels=80, out_channels=160, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=2, stride=2),
-                                   Block(in_channels=160, out_channels=250, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=3, stride=2),
-                                   Block(in_channels=250, out_channels=320, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=2, stride=2),
-                                   Block(in_channels=320, out_channels=350, kernel_size=3),
-                                   nn.MaxPool2d(kernel_size=3, stride=2),
+        self.model = nn.Sequential()
+        self.model.add_module('first', Block(in_channels=3, out_channels=20, kernel_size=3))
+        self.model.add_module("maxpool1", nn.MaxPool2d(kernel_size=3, stride=2))
+        self.model.add_module('first2', Block(in_channels=20, out_channels=40, kernel_size=3))
+        self.model.add_module("maxpool2", nn.MaxPool2d(kernel_size=2, stride=2))
+        self.model.add_module('first3', Block(in_channels=40, out_channels=80, kernel_size=3))
+        self.model.add_module("maxpool3", nn.MaxPool2d(kernel_size=2, stride=2))
+        self.model.add_module('first21', Block(in_channels=80, out_channels=160, kernel_size=3))
+        self.model.add_module("maxpool4", nn.MaxPool2d(kernel_size=2, stride=2))
+        self.model.add_module('first212', Block(in_channels=160, out_channels=250, kernel_size=3))
+        self.model.add_module("maxpool42", nn.MaxPool2d(kernel_size=2, stride=2))
+        self.model.add_module('first213', Block(in_channels=250, out_channels=320, kernel_size=3))
+        self.model.add_module("maxpool43", nn.MaxPool2d(kernel_size=2, stride=2))
+        self.model.add_module('first214', Block(in_channels=320, out_channels=350, kernel_size=3))
+        self.model.add_module("maxpool44", nn.MaxPool2d(kernel_size=2, stride=1))
 
-                                   Flatten(),
-                                   nn.Linear(1400, 512),
-                                   nn.ReLU(),
-                                   nn.Linear(512, 2),
-                                   nn.LogSoftmax())
+        self.model.add_module("flatten", Flatten())
+        self.model.add_module('seventh2', nn.Linear(1400, 512))
+        self.model.add_module("linearr", nn.ReLU())
+        self.model.add_module('seventh3', nn.Linear(512, 2))
+        self.model.add_module('softmax', nn.LogSoftmax())
 
         self.model.load_state_dict(torch.load(path))
 
