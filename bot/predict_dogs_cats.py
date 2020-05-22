@@ -46,7 +46,7 @@ class resBlock(nn.Module):
         return x
 
 class Predictor:
-    def __init__(self, path='checkpoint.pth'):
+    def __init__(self, path='dogs_cats_dict'):
         self.model = nn.Sequential(Block(in_channels=3, out_channels=20, kernel_size=3),
                                    nn.MaxPool2d(kernel_size=3, stride=2),
                                    Block(in_channels=20, out_channels=40, kernel_size=3),
