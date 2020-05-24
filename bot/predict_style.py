@@ -163,12 +163,8 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
         print("training finished")
-        image_array = input_image.data.mul(255).add_(0.5).clamp_(0, 255).permute((1, 2, 0)).to('cpu', torch.uint8).numpy()
-        print("convert to array")
-        print(type(image_array))
-        im = Image.fromarray(image_array)
-        print("made an image")
-        im.save('res_photo.jpg')
+        
+        save_image(input_image.data, 'res_photo.jpg')
         print("saved to disc")
         
         
