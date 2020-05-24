@@ -164,9 +164,12 @@ class Predictor:
             optimizer.zero_grad()
             
         input_image.data.clamp_(0, 1)
-
-        image_array = input_image.data.numpy()[0].transpose(1, 2, 0)
+        print("training finished")
+        image_array = input_image.cpu().data.numpy()[0].transpose(1, 2, 0)
+        print("convert to array")
         im = Image.fromarray(image_array)
+        print("made an image")
         im.save('res_photo.jpg')
+        print("saved to disc")
         
         
