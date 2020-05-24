@@ -163,7 +163,7 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
         print("training finished")
-        image_array = np.transpose(input_image.data.to('cpu', torch.uint8).numpy()[0], (1, 2, 0))
+        image_array = input_image.data.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
         print("convert to array")
         print(type(image_array))
         im = Image.fromarray(image_array)
