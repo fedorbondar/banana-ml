@@ -19,6 +19,8 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from predict_style import Predictor
 
+predictor = Predictor()
+
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -37,8 +39,8 @@ def start(update, context):
     update.message.reply_text('Hi, {}!'.format(name))
     update.message.reply_text('My name is banana-ml bot. I can make your photos look like \
                               the famous pictures! Please, choose the option: \n \
-                              - "1" is for "The great wave off Kaganawa" by K. Hokusai style \n \
-                              - "2" is for "The Scream" by E. Munk style \n \
+                              - "1" is for "The great wave off Kaganawa" by K. Hokusai style; \n \
+                              - "2" is for "The Scream" by E. Munk style; \n \
                               - "3" is for "Starry night" by V. Van Gogh style.')
 
 
@@ -76,17 +78,15 @@ def get_photo(update, context):
     update.message.reply_text('Nice! Got your photo, styling...')
     
     # load saved photo
-    new_photo = open('user_photo.jpg', 'rb')
 
     # send photo
     global option
     if option == "1":
-        predictor = Predictor("wave_model_dict")
+        predictor.get_image_predict('user_photo.jpg', "1")
     elif option == "2":
-        predictor = Predictor("scream_model_dict")
+        predictor.get_image_predict('user_photo.jpg', "2")
     elif option == "3":
-        predictor = Predictor("night_model_dict")
-    predictor.get_image_predict('user_photo.jpg')
+        predictor.get_image_predict('user_photo.jpg', "3")
     res_photo = open('res_photo.jpg', 'rb')
     context.bot.send_photo(chat_id=update.effective_chat.id, photo=res_photo)
 
