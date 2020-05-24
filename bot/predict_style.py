@@ -73,7 +73,8 @@ class Predictor:
         self.model = nn.Sequential()
 
     def get_image_predict(self, img_path='img_path.jpg', option="1"):
-        
+
+        img = Image.open(img_path)
         img_tensor = image_loader(img_path).type(torch.FloatTensor)
         
         if option == "1":
@@ -164,7 +165,7 @@ class Predictor:
         input_image.data.clamp_(0, 1)
         print("training finished")
         
-        save_image(input_image.data, 'res_photo.jpg')
+        save_image(input_image.data.reshape(img.size), 'res_photo.jpg')
         print("saved to disc")
         
         
