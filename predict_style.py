@@ -73,10 +73,8 @@ class Predictor:
         self.model = nn.Sequential()
 
     def get_image_predict(self, img_path='img_path.jpg', option="1"):
-        image = Image.open(img_path).convert('RGB').resize((256, 256), Image.ANTIALIAS)
-        img_tensor = torch.tensor(np.transpose(np.array(image), (2, 0, 1))).unsqueeze(0)
-        print('Before normalize', torch.max(img_tensor))
-        img_tensor = img_tensor / 255.
+
+        img_tensor = image_loader(img_path).type(torch.FloatTensor)
         
         if option == "1":
             style_img = image_loader("wave.jpg").type(torch.FloatTensor)
@@ -84,7 +82,7 @@ class Predictor:
             style_img = image_loader("the_scream.jpg").type(torch.FloatTensor)
         if option == "3":
             style_img = image_loader("starry_night.jpg").type(torch.FloatTensor)
-
+        
         content_weight = 1            # coefficient for content loss
         style_weight = 1000           # coefficient for style loss
         content_layers = ('conv_4',)  # use these layers for content loss
@@ -164,9 +162,9 @@ class Predictor:
             optimizer.zero_grad()
             
         input_image.data.clamp_(0, 1)
-
-        image_array = input_image.data.numpy()[0].transpose(1, 2, 0)
-        im = Image.fromarray(image_array)
-        im.save('res_photo.jpg')
+        print("training finished")
+        
+        save_image(input_image.data, 'res_photo.jpg')
+        print("saved to disc")
         
         
