@@ -73,10 +73,8 @@ class Predictor:
         self.model = nn.Sequential()
 
     def get_image_predict(self, img_path='img_path.jpg', option="1"):
-        image = Image.open(img_path).convert('RGB').resize((256, 256), Image.ANTIALIAS)
-        img_tensor = torch.tensor(np.transpose(np.array(image), (2, 0, 1))).unsqueeze(0)
-        print('Before normalize', torch.max(img_tensor))
-        img_tensor = img_tensor / 255.
+        
+        img_tensor = image_loader(img_path).type(torch.FloatTensor)
         
         if option == "1":
             style_img = image_loader("wave.jpg").type(torch.FloatTensor)
@@ -165,8 +163,9 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
         print("training finished")
-        image_array = np.transpose(input_image.data.data.numpy()[0], (1, 2, 0))
+        image_array = np.transpose(input_image.cpu().data.data.numpy()[0], (1, 2, 0))
         print("convert to array")
+        print(type(image_array))
         im = Image.fromarray(image_array)
         print("made an image")
         im.save('res_photo.jpg')
