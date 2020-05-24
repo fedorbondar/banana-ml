@@ -165,7 +165,7 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
 
-        image_array = tensor_img.data.numpy()[0].transpose(1, 2, 0)
+        image_array = input_image.data.numpy()[0].transpose(1, 2, 0)
         im = Image.fromarray(image_array)
         im.save('res_photo.jpg')
         
