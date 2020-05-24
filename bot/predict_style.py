@@ -7,6 +7,7 @@ import torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.utils import save_image
+from torch.autograd import Variable
 
 class ContentLoss(nn.Module):
 
@@ -56,7 +57,7 @@ class StyleLoss(nn.Module):
     
 
 class Predictor:
-    def __init__(self, path='wave_model_dict'):
+    def __init__(self):
         self.model = nn.Sequential()
         self.model.add_module('conv_1', nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)))
         self.model.add_module('style_loss_1', StyleLoss())
@@ -102,13 +103,86 @@ class Predictor:
         self.model.add_module('relu_16', nn.ReLU(inplace=True))
         self.model.add_module('pool_17', nn.MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False))
 
-        self.model.load_state_dict(torch.load(path))
-
-    def get_image_predict(self, img_path='img_path.jpg'):
+    def get_image_predict(self, img_path='img_path.jpg', option="1"):
         image = Image.open(img_path).convert('RGB').resize((256, 256), Image.ANTIALIAS)
         img_tensor = torch.tensor(np.transpose(np.array(image), (2, 0, 1))).unsqueeze(0)
         print('Before normalize', torch.max(img_tensor))
         img_tensor = img_tensor / 255.
-        model(img_tensor)
-        save_image(img_tensor, "res_photo.jpg")
+        
+        if option == "1":
+            style_img = image_loader("wave.jpg").type(dtype)
+        if option == "2":
+            style_img = image_loader("the_scream.jpg").type(dtype)
+        if option == "3":
+            style_img = image_loader("starry_night.jpg").type(dtype)
+
+        content_weight = 1            # coefficient for content loss
+        style_weight = 1000           # coefficient for style loss
+        content_layers = ('conv_4',)  # use these layers for content loss
+        style_layers = ('conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5')
+        
+        content_losses = []
+        style_losses = []
+
+        i = 1
+        for layer in list(self.model):
+            if isinstance(layer, nn.Conv2d):
+                name = "conv_" + str(i)
+
+                if name in content_layers:
+                    # add content loss:
+                    target = self.model(img_tensor).clone()
+                    content_loss = ContentLoss(target, content_weight)
+                    content_losses.append(content_loss)
+
+                if name in style_layers:
+                    # add style loss:
+                    target_feature = self.model(style_img).clone()
+                    target_feature_gram = gram_matrix(target_feature)
+                    style_loss = StyleLoss(target_feature_gram, style_weight)
+                    style_losses.append(style_loss)
+
+            if isinstance(layer, nn.ReLU):
+                name = "relu_" + str(i)
+
+                if name in content_layers:
+                    # add content loss:
+                    target = self.model(img_tensor).clone()
+                    content_loss = ContentLoss(target, content_weight)
+                    content_losses.append(content_loss)
+
+                if name in style_layers:
+                    # add style loss:
+                    target_feature = self.model(style_img).clone()
+                    target_feature_gram = gram_matrix(target_feature)
+                    style_loss = StyleLoss(target_feature_gram, style_weight)
+                    style_losses.append(style_loss)
+
+                i += 1
+
+        input_image = Variable(img_tensor.clone().data, requires_grad=True)
+        optimizer = torch.optim.LBFGS([input_image])
+        
+        num_steps = 300
+
+        for i in range(num_steps):
+            # correct the values of updated input image
+            input_image.data.clamp_(0, 1)
+
+            model(input_image)
+            style_score = 0
+            content_score = 0
+            for sl in style_losses:
+                style_score += sl.backward()
+            for cl in content_losses:
+                content_score += cl.backward()
+                
+            loss = style_score + content_score
+            
+            optimizer.step(lambda:loss)
+            optimizer.zero_grad()
+            
+        input_image.data.clamp_(0, 1)
+        
+        save_image(input_image.cpu().data.numpy()[0].transpose(1, 2, 0), "res_photo.jpg")
         
