@@ -103,7 +103,7 @@ class Predictor:
 
                 if name in content_layers:
                     # add content loss:
-                    target = model(img_tensor).clone()
+                    target = self.model(img_tensor).clone()
                     content_loss = ContentLoss(target, content_weight)
                     self.model.add_module("content_loss_" + str(i), content_loss)
                     content_losses.append(content_loss)
