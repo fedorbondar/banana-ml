@@ -164,6 +164,9 @@ class Predictor:
             optimizer.zero_grad()
             
         input_image.data.clamp_(0, 1)
+
+        image_array = tensor_img.data.numpy()[0].transpose(1, 2, 0)
+        im = Image.fromarray(image_array)
+        im.save('res_photo.jpg')
         
-        save_image(input_image.cpu().data.numpy()[0].transpose(1, 2, 0), "res_photo.jpg")
         
