@@ -16,7 +16,7 @@ from skimage.transform import resize
 def image_loader(image_name):
     image = resize(imread(image_name), [256, 256])
     image = image.transpose([2,0,1]) / image.max()
-    image = Variable(dtype(image))
+    image = Variable(torch.FloatTensor(image))
     # fake batch dimension required to fit network's input dimensions
     image = image.unsqueeze(0)
     return image
@@ -77,15 +77,13 @@ class Predictor:
         img_tensor = torch.tensor(np.transpose(np.array(image), (2, 0, 1))).unsqueeze(0)
         print('Before normalize', torch.max(img_tensor))
         img_tensor = img_tensor / 255.
-
-        dtype = torch.FloatTensor
         
         if option == "1":
-            style_img = image_loader("wave.jpg").type(dtype)
+            style_img = image_loader("wave.jpg").type(torch.FloatTensor)
         if option == "2":
-            style_img = image_loader("the_scream.jpg").type(dtype)
+            style_img = image_loader("the_scream.jpg").type(torch.FloatTensor)
         if option == "3":
-            style_img = image_loader("starry_night.jpg").type(dtype)
+            style_img = image_loader("starry_night.jpg").type(torch.FloatTensor)
 
         content_weight = 1            # coefficient for content loss
         style_weight = 1000           # coefficient for style loss
