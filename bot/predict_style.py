@@ -150,7 +150,7 @@ class Predictor:
             # correct the values of updated input image
             input_image.data.clamp_(0, 1)
 
-            model(input_image)
+            self.model(input_image)
             style_score = 0
             content_score = 0
             for sl in style_losses:
