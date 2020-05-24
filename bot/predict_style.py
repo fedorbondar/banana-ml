@@ -84,7 +84,7 @@ class Predictor:
         if option == "3":
             style_img = image_loader("starry_night.jpg").type(torch.FloatTensor)
 
-        ex = int((img.size[0]/(img.size[0]+img.size[1]))*65536)
+        ex = int((img.size[0]/img.size[1])*256)
         new_shape = (3, ex, 65536//ex)
         
         content_weight = 1            # coefficient for content loss
