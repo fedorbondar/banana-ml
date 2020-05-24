@@ -77,6 +77,8 @@ class Predictor:
         img_tensor = torch.tensor(np.transpose(np.array(image), (2, 0, 1))).unsqueeze(0)
         print('Before normalize', torch.max(img_tensor))
         img_tensor = img_tensor / 255.
+
+        dtype = torch.FloatTensor
         
         if option == "1":
             style_img = image_loader("wave.jpg").type(dtype)
