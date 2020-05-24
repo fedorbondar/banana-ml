@@ -84,6 +84,9 @@ class Predictor:
         if option == "3":
             style_img = image_loader("starry_night.jpg").type(torch.FloatTensor)
 
+        ex = int((img.size[0]/(img.size[0]+img.size[1]))*65536)
+        new_shape = (3, ex, 65536//ex)
+        
         content_weight = 1            # coefficient for content loss
         style_weight = 1000           # coefficient for style loss
         content_layers = ('conv_4',)  # use these layers for content loss
@@ -165,7 +168,7 @@ class Predictor:
         input_image.data.clamp_(0, 1)
         print("training finished")
         
-        save_image(input_image.data.reshape(img.size), 'res_photo.jpg')
+        save_image(input_image.data.reshape(new_shape), 'res_photo.jpg')
         print("saved to disc")
         
         
