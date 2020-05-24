@@ -165,7 +165,7 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
         print("training finished")
-        image_array = input_image.cpu().data.numpy()[0].transpose(1, 2, 0)
+        image_array = torch.tensor(np.transpose(input_image.cpu().data.numpy()[0], (1, 2, 0)))
         print("convert to array")
         im = Image.fromarray(image_array)
         print("made an image")
