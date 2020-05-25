@@ -14,7 +14,7 @@ from matplotlib.pyplot import imread
 from skimage.transform import resize
 
 def image_loader(image_name):
-    image = resize(imread(image_name), [256, 256])
+    image = resize(imread(image_name), [512, 512])
     image = image.transpose([2,0,1]) / image.max()
     image = Variable(torch.FloatTensor(image))
     # fake batch dimension required to fit network's input dimensions
@@ -163,6 +163,8 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
         print("training finished")
+
+        self.model = nn.Sequential()
         
         save_image(input_image.data, 'res_photo.jpg')
         print("saved to disc")
