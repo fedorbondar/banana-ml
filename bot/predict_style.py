@@ -163,8 +163,6 @@ class Predictor:
             
         input_image.data.clamp_(0, 1)
         print("training finished")
-
-        self.model = nn.Sequential()
         
         save_image(input_image.data, 'res_photo.jpg')
         print("saved to disc")
